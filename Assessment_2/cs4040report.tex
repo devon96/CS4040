@@ -1,14 +1,14 @@
 \documentclass{csfourzero}
 
-\title{CS4040 Report Structure}
-\author{Ehud Reiter}
+\title{CS4040: Impact of Meltdown \& Spectre}
+\author{Konrad Dryja}
 \date{\today}
 % A useful package to support on-line references
 \usepackage{url}
 \usepackage{natbib}
 
 \bibliographystyle{plain}
-\abstract{An expansion of the title and a contraction of the report.}
+\abstract{The aftermath of discovery of side-channel attacks on the performance of modern chips.}
 
 
 \begin{document}
@@ -17,18 +17,16 @@
 
 \section{Introduction}
 \label{sec:intro}
+With speculative execution no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard - after the processor designers hit a ceiling with potential clock speed, being hit by Moore's Law \cite{schaller1997moore}. I will not be focusing on the origin and details of the vulnerabilities, but rather the patches that followed - although will overview the basics in the next section.  
 
-The aim of the \textbf{introduction} is to say what \textit{you} are going to investigate in the report and why it
-  is interesting.
+Personally, I found the topic the most interesting, as the aftermath is still haunting security researches to this day, since the fault was not the software, but inherent architecture was flawed. Moreover, frequently we are hearing news how the newest vulnerability based on side-channel execution has been discovered - with the definite fix being complete hardware replacement with a chip produced after 2017. This forced Intel, AMD, ARM to release very aggressive patches, greatly hurting the benchmarks.
 
-Guide length: 250 words.
+This has also raised ethical questions - since some of the machines suffered as much as 50\& drop in performance. In the eyes of law, this could classify as false advertising followed by with many class-action lawsuits. As stated by Intel in their 2017 Annual report, as of February 2018, they were facing 30 customer faced suits along with two securities \cite{intelreport}. Intel perhaps is the company that was the most under fire, since Variant 1, also known as Meltdown, was mostly apparent in their chips 
 
 \section{Background and related work}
 \label{sec:lit}
 
-A review of related work \cite{p2pbookv2,macdonald2016summarising,p2pwiki}.
-
-Guide length: 500 words.
+When speaking about Spectre and Meltdown, it's very important to start from the very beginning - when in July 2017, a researcher Jann Horn from Google's Project Zero has discovered the vulnerability. Due to the severity and potential implications resulting from premature releasing of the findings, those were first communicated directly - on NDA basis - with manufacturers, hoping for an immediate fix. 
 
 \section{Research question}
 \label{sec:rq}
