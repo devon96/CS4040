@@ -6,7 +6,9 @@
 % A useful package to support on-line references
 \usepackage{url}
 \usepackage{natbib}
-
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{language=C,keywordstyle={\bfseries \color{blue}}}
 \bibliographystyle{plain}
 \abstract{The aftermath of discovery of side-channel attacks on the performance of modern chips.}
 
@@ -26,7 +28,19 @@ This has also raised ethical questions - since some of the machines suffered as 
 \section{Background and related work}
 \label{sec:lit}
 
-When speaking about Spectre and Meltdown, it's very important to start from the very beginning - when in July 2017, a researcher Jann Horn from Google's Project Zero has discovered the vulnerability. Due to the severity and potential implications resulting from premature releasing of the findings, those were first communicated directly - on NDA basis - with manufacturers, hoping for an immediate fix. 
+When speaking about Spectre and Meltdown, it's very important to start from the very beginning - when in July 2017, a researcher Jann Horn from Google's Project Zero has discovered the vulnerability. Due to the severity and potential implications resulting from premature releasing of the findings, those were first communicated directly - on NDA basis - with manufacturers, hoping for an immediate fix. On January 2018, two papers were released by J. Horn et al. illustrating in-depth the vulnerability and how it could be replicated \cite{Lipp2018meltdown, Kocher2018spectre}. The papers present a throughout overview of the attack - the exploitation here is based on \textbf{Branch Prediction} (BP) along with \textbf{Out of Order Execution} (OOE). Those are optimizations techniques used by almost all CPUs on the market.
+
+\begin{itemize}
+  \item BP lets the processor "predict" the direction will go towards without explicitly evaluating the condition. For example, in a situation where \lstinline{if} statement was successful for 100 iterations, we can assume that 101st will be successful as well and thus prematurely execute the included code-block  
+
+  \item OOE, on the other hand will often reorder scheduled operations leaving the most time-consuming actions till the end, executing the ones present in CPU cache immediately - assuming that those do not depend on each other, e.g., it's a simple summation.
+\end{itemize}
+
+Together they create a cheap and clever way to speed up the execution of binaries, but unbeknownst opened a pathway for side-channel attacks, exploiting the fact that CPU was executing the code that it wasn't meant to in the first place. 
+
+Multiple patches have been created ever since to mitigate the negative effect, trying to minimize the impact on performance. M. L{\"o}w \cite{low2018overview} provides an overview of created patches and affected hardware.
+
+
 
 \section{Research question}
 \label{sec:rq}
@@ -49,21 +63,21 @@ target population. What are the dependent and independent variables?
 
 Guide length: 500 words.
 
-\section{Results}
-\label{sec:results}
+% \section{Results}
+% \label{sec:results}
 
-Present the results. A good way to organise this is via subsections
-for each hypothesis you tested. Include graphs of results
-(e.g.\ Figure~\ref{fig:data}), tests of significance, etc. If you have
-negative results, include them. A negative results is just as
-informative and useful as a positive one, sometimes more so.
+% Present the results. A good way to organise this is via subsections
+% for each hypothesis you tested. Include graphs of results
+% (e.g.\ Figure~\ref{fig:data}), tests of significance, etc. If you have
+% negative results, include them. A negative results is just as
+% informative and useful as a positive one, sometimes more so.
 
-\begin{figure}
-\centerline{\includegraphics[width=5in]{basic-data-errors}}
-\caption{Some results.}\label{fig:data}
-\end{figure}
+% % \begin{figure}
+% % \centerline{\includegraphics[width=5in]{basic-data-errors}}
+% % \caption{Some results.}\label{fig:data}
+% % \end{figure}
 
-Guide length: 500 words.
+% Guide length: 500 words.
 
 \section{Discussion}
 \label{sec:discuss}
