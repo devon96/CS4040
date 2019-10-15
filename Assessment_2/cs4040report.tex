@@ -64,16 +64,28 @@ It is also important to mention that software mitigation can only be helpful to 
 
 \section{Research question}
 \label{sec:rq}
-Having introduced the basics of side-channel attacks in previous sections, we're now ready to tackle the implications of the released patches. The research question that would be formed following the aformentioned considerations would be \textbf{"How significant the performance degradation is after mitigations for Side-Channel Attacks were deployed and are they worth the gained security"}
+Having introduced the basics of side-channel attacks in previous sections, we are now ready to tackle the implications of the released patches. The research question that would be formed following the aforementioned considerations would be \textbf{"How significant the performance degradation is after mitigations for Side-Channel Attacks were deployed and are they worth the gained security"}. 
 
-Given the problem context (Section~\ref{sec:intro}) and background
-(Section~\ref{sec:lit}), you should now be in a position to present
-what you have investigated. \textbf{Pose this as a question.}
+Fortunately, majority of the flaws were already patched with immediate effect, meaning that the vulnerability cannot be replicated on up-to-date software. This leaves us with necessity of either simulating the behaviour via software or rolling back the updates. To this day, Dell claims that no malicious use has been spotted to this day \cite{dell}, which introduces question of how severe the incident was and whether the sacrifice was worth it. We can speculate that this state and others pushed the Linux team to introduce an option for kernel versions starting from 5.2 allowing the users to disable the mitigations, regaining the performance but opening the system for potential attacks  
 
-Then you should present your approach to addressing this
-question.
+\begin{lstlisting}[caption=Disabled mitigations,frame=tlrb,language=bash]{Name}
+% lscpu            
+[...]
+Model name:                      Intel(R) Core(TM) i5-6500 CPU 
+[...]
+Vulnerability L1tf:              Mitigation; PTE Inversion;
+Vulnerability Mds:               Vulnerable; SMT disabled
+Vulnerability Meltdown:          Vulnerable
+Vulnerability Spec store bypass: Vulnerable
+Vulnerability Spectre v1:        Vulnerable:
+Vulnerability Spectre v2:        Vulnerable, IBPB: disabled
+\end{lstlisting}
 
-Guide length: 500 words.
+For Windows, on the other hand, the mitigations are slightly harder to disable, although it can be achieved by tweaking Windows Registry \cite{msoft}. While the impact on consumer Windows version can be negligible (according to Microsoft), Server edition of their Operating System was particularly susceptible to slowdowns, especially during Input/Output operations. Microsoft decided to leave the decision of enabling the patch up to system administrators, leaving the option enabled by default. Alas, mitigations for CVE-2017-5753 (Spectre Variant 1) cannot be disabled for Windows at the moment. To work around this, I will install Windows 10 Version 1607 (From April 2016) and perform all experiments in that environment - with no internet connection to avoid automatic updates. Although this might also cause inconsistency, as newer revision might also include unrelated performance fixes - thus the test will have to be performed on both older revision of Windows 10 and Windows Server with only disabled mitigations.
+
+At this point, with a vulnerable system, we have several ways to obtain before-after comparison of performance, as mentioned: each platform offering different solutions. Linux has open access to compiled byte-code with an option of disabling optimizers potentially spoiling the results. Usually, to benchmark the performance of a CPU, we would be looking at how quickly it can solve complex operations. Example the being prime numbers calculations or matrices multiplication. There are two open-source packages which wrap around those operations, producing a concise report on performed CPU Cycles, page faults etc - stress-ng \cite{stressng} and sysbench \cite{sysbench}  
+
+With Windows, it is slightly more difficult to access direct CPU registers from the OS - additionally, all the compiled code is subject to many optimizations, which might introduce variance and inconsistencies in the results. The most efficient way would be to utilize closed-source, proprietary software created specifically for benchmarking, which can extract raw performance data. Most popular choice nowadays is Cinebench along with 3DMark which at the same time could determine whether the slowdowns in CPU could also be affecting external GPU. 
 
 \section{Experimental Design}
 \label{sec:exp}
