@@ -1,6 +1,6 @@
 \documentclass{csfourzero}
 
-\title{Impact of Meltdown \& Spectre mitigations}
+\title{Impact of Meltdown \& Spectre Mitigations}
 \author{Konrad Dryja}
 \date{\today}
 % A useful package to support on-line references
@@ -11,7 +11,7 @@
 \usepackage{enumitem}
 \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
 \bibliographystyle{plain}
-\abstract{In my CS4040 report I'd like to evaluate the impact of the discovery of Side-Channel Attacks back in January 2018 with Spectre \& Meltdown on the lead. As those were utilizing many of the performance reliant features - which had to be rolled back or squashed due to security concerns. The removal resulted in many calls about grossly deteriorated performance. With the patches already in place, I have gone ahead and removed them to compare before and after performance of one-core and single-core performance in different tasks, such as prime calculation or rendering. I will be aiming to diversify tested hardware and software, including platforms such as Windows, Linux and Intel, AMD. Final points will close off the results, concluding with recommendation whether it's reasonable to leave the mitigation disabled in lights of potential vulnerabilities.}
+\abstract{In my CS4040 report I'd like to evaluate the impact of the discovery of Side-Channel Attacks back in January 2018 with Spectre \& Meltdown leading. As those were utilizing many of the performance reliant features - which had to be rolled back or squashed due to security concerns. The removal resulted in many reports about grossly deteriorated performance. With the patches already in place, I have gone ahead and removed them to compare before and after performance of one- and multi-core performance in different tasks, such as prime calculation or rendering. I will be aiming to diversify tested hardware and software, including platforms such as Windows, Linux and Intel, AMD. Final points will close off the results, concluding with recommendation whether it's reasonable to leave the mitigation disabled in lights of potential vulnerabilities.}
 
 
 \begin{document}
@@ -20,11 +20,11 @@
 
 \section{Introduction}
 \label{sec:intro}
-With speculative execution no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard - after the processor designers hit a ceiling with potential clock speeds, getting hit by Moore's Law \cite{schaller1997moore}, stating that density of transistors on the circuit board doubles every 18 months. I will briefly introduce and recap the origin and details of those vulnerabilities, putting more focus the patches that followed.  
+With speculative execution no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard. Once the processor designers reached a ceiling with potential clock speeds, getting hit by Moore's Law \cite{schaller1997moore} (stating that density of transistors on the circuit board doubles every 18 months), they started looking for different solutions. I will briefly introduce and recap the origin and details of those vulnerabilities, putting more focus the patches that followed.  
 
-Personally, I found the topic the most interesting, as the aftermath is still haunting security researches to this day, since the fault was not the software, but inherent architecture was found to be flawed. Moreover, nowadays we are frequently hearing news (most  recent being "Fallout"\cite{fallout}) how the newest vulnerability based on side-channel execution has been discovered - with the definite fix being complete hardware replacement with a chip produced after 2017. This forced Intel, AMD, ARM to release very aggressive patches, greatly hurting the benchmarks.
+Personally, I found the topic the most interesting, as the aftermath is still haunting security researches to this day, since the fault was not the software, but inherent architecture was found to be flawed. Moreover, nowadays we are frequently hearing news (most recent being "Fallout"\cite{fallout}) how the newest vulnerability based on side-channel execution has been discovered - with the definite fix being complete hardware replacement with a chip produced after 2017. This forced Intel, AMD, ARM to release very aggressive patches, greatly hurting the benchmarks.
 
-This has also raised ethical questions - since some of the affected machines suffered as much as 50\% drop in performance. In the eyes of law, this could classify as false advertising which naturally was followed by many class-action lawsuits. As stated by Intel in their 2017 Annual report, as of February 2018, they were facing 30 customer faced suits along with two securities \cite{intelreport}. Intel perhaps is the company that was the most under fire, since Variant 1, also known as Meltdown, was mostly apparent in their chips, although Variant 2 \& 2 were replicated in almost all consumer chips (including AMD et al.).
+This has also raised ethical questions - since some of the affected machines suffered as much as 50\% drop in performance. In the eyes of law, this could classify as false advertising which naturally was followed by many class-action lawsuits. As stated by Intel in their 2017 Annual report, as of February 2018, they were facing 30 customer suits along with two securities \cite{intelreport}. Intel perhaps is the company that was the most under fire, since Variant 1, also known as Meltdown, was mostly apparent in their chips, although Variant 2 \& 2 were replicated in almost all consumer chips (including AMD et al.).
 
 Computing community and hardware architects were faced with a difficult dilemma - how much of security are we willing to sacrifice in favour of increased performance?
 
@@ -40,7 +40,7 @@ When speaking about Spectre and Meltdown, it's very important to start from the 
 
 Together, they create a cheap and clever way to speed up the execution of binaries, but unbeknownst opened a pathway for side-channel attacks, exploiting the fact that CPU was executing the code that it wasn't meant to in the first place. Normally, the results are only stored in fast-access L-cache (which is only accessible from kernel-mode and is purely used to increase performance), with no way to read those blocks from user mode. A proof-of-concept presented by the researches \cite{Kocher2018spectre} illustrated how it's possible to measure how long it takes to access particular variable in order to determine whether it's coming from RAM or L-cache and then make statistical assumption whether the piece of data was evaluated inside of block of code which was executed speculatively. 
 
-There is also a subtle difference between the nature of attacks described by \textbf{Meltdown} (Variant 3) and \textbf{Spectre} (Variant 1, 2). The former allowed for any arbirtary process to access kernel-space memory, which contains restricted data such as password or even latest keystroke information. The latter - on the other hand - was capable of crossing process or sandbox boundaries, effectively nullyfying the protections provided by virtualised environment or JIT (just-in-time) compilers. This potentially might allow an attacker to deploy malicious binary onto VM cluster (run by a cloud provider such as GCP or AWD) and access information of other users.
+There is also a subtle difference between the nature of attacks described by \textbf{Meltdown} (Variant 3) and \textbf{Spectre} (Variant 1, 2). The former allowed for any arbirtary process to access kernel-space memory, which contains restricted data such as password or even latest keystroke information. The latter - on the other hand - was capable of crossing process or sandbox boundaries, effectively nullyfying the protections provided by virtualised environment or JIT (just-in-time) compilers. This potentially might allow an attacker to deploy malicious binary onto VM cluster (run by a cloud provider such as GCP or AWS) and access information of other users.
 
 \pagebreak
 \begin{lstlisting}[caption=Meltdown PoC,frame=tlrb, numbers=left, firstnumber=1]{Name}
@@ -56,7 +56,7 @@ for(int i=0; i<256; i++) {
 }
 \end{lstlisting}
 
-Multiple patches have been created ever since to mitigate the negative effect, trying to minimize the impact on performance. M. L{\"o}w \cite{low2018overview} provides an overview of created mitigations and affected hardware. The major and immediate patches which had the biggest performance effect included:
+Multiple patches have been created ever since to mitigate the negative effect, trying to minimize the impact on performance. M. L{\"o}w\cite{low2018overview} provides an overview of created mitigations and affected hardware. The major and immediate patches which had the biggest performance effect included:
 
 \paragraph{KAISER} \cite{corbet2017current} - which stands for Kernel Page-Table Isolation. Meltdown is exploiting the fact that for the purposes of reduced access times, the entire kernel address page is mapped to every process. This is not directly accessible from user-mode and is protected by privileged bit. Unfortunately, with side-channel attacks, this data can be speculatively loaded and then later retrieved via a covert channel. KAISER aims to drop that mapping and leave only necessary signals.
 \paragraph{Retpoline} \cite{turner2018retpoline} - retroactive trampoline, it's a mitigation aiming to catch Branch Predictor in an infinite loop, effectively never speculatively executing sensitive code.
@@ -66,7 +66,7 @@ It is also important to mention that software mitigation can only be helpful to 
 
 \section{Research question}
 \label{sec:rq}
-Having introduced the basics of side-channel attacks in previous sections, we are now ready to tackle the implications of the released patches. The research question that could be formed following the aforementioned considerations would be \textbf{"How significant the performance degradation was, after mitigations for Side-Channel Attacks had been deployed and were they worth the improved security?"}. 
+Having introduced the basics of side-channel attacks in previous sections, we are now ready to tackle the implications of the released patches. The research question that could be formed following the aforementioned considerations would be \textbf{`` How significant the performance degradation was, after mitigations for Side-Channel Attacks had been deployed and were they worth the improved security? ``}. 
 
 Fortunately, majority of the flaws were already patched with immediate effect, meaning that the vulnerability cannot be replicated on up-to-date software. This leaves us with necessity of either simulating the hardware via software or rolling back the updates. To this day, Dell claims that no malicious use has been spotted to this day \cite{dell}, which introduces question of how severe the incident was and whether the sacrifice was worth it. We can speculate that this announcement and others pushed the Linux team to introduce an option for kernel versions starting from 5.2 allowing the users to disable the mitigations, regaining the performance but opening the system for potential attacks.  
 
@@ -89,48 +89,6 @@ At this point, with a vulnerable system, we have several ways to obtain before-a
 
 With Windows, it is slightly more difficult to access direct CPU registers from the OS - additionally, all the compiled code is subject to many optimizations, which might introduce variance and inconsistencies in the results. The most efficient way would be to utilize closed-source, proprietary software created specifically for benchmarking (used mostly to compare and rank consumer-grade products), which can extract raw performance data. Most popular choice nowadays is Cinebench along with 3DMark which at the same time could determine whether the slowdowns in CPU could also be affecting external GPU. 
 
-\section{Experimental Design}
-\label{sec:exp}
-
-What are your hypotheses? How are you going to test them? What is your
-target population? What are your datasets; i.e.\ your sample of the
-target population. What are the dependent and independent variables?
-
-Guide length: 500 words.
-
-% \section{Results}
-% \label{sec:results}
-
-% Present the results. A good way to organise this is via subsections
-% for each hypothesis you tested. Include graphs of results
-% (e.g.\ Figure~\ref{fig:data}), tests of significance, etc. If you have
-% negative results, include them. A negative results is just as
-% informative and useful as a positive one, sometimes more so.
-
-% % \begin{figure}
-% % \centerline{\includegraphics[width=5in]{basic-data-errors}}
-% % \caption{Some results.}\label{fig:data}
-% % \end{figure}
-
-% Guide length: 500 words.
-
-\section{Discussion}
-\label{sec:discuss}
-
-What do the results say? What have you learned from the
-experiments? Have you identified a correlation between variables, or
-causation? What are the limitations of what you've done? What further
-experiments might be of benefit?
-
-Guide length: 400 words.
-
-\section{Conclusion}
-\label{sec:conc}
-
-What have you done and why? What have you shown through your
-experiments?
-
-Guide length: 100 words.
 
 \bibliography{myrefs}
 
