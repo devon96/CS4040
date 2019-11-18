@@ -93,14 +93,16 @@ For the purposes of this research, I will be focusing only on readings obtained 
 
 \section{Experimental Design}
 \label{sec:exp}
-
-As the mitigations for those vulnerabilities described in previous sections heavily modify or straight-up disable a lot of performance features present in modern CPUs, it will be necessary to perform benchmarking on CPU themselves with and without those mitigations installed. In order to answer the research question and evaluate how big and whether meaningful the impact was, we can devise the following null hypotheses: 
+In order to answer the research question and evaluate how big and whether meaningful the impact was, we can devise the following null hypotheses: 
 \begin{itemize}
   \item For each of the benchmarking utilities run on the hardware, Spectre mitigations do not cause statistically significant differences in the results.
   \item Runtime of CPU-intensive operations (such as encryption) does not increase with enabled mitigations for Spectre.
 \end{itemize}
 
+Since the mitigations for the vulnerabilities described in previous sections heavily modify or straight-up disable a lot of performance features present in modern chips, it will be necessary to perform benchmarking on the CPUs themselves with and without those mitigations installed. Running generic speed tests on the performance of the chips side-to-side with the same CPU without the patches will result in potential runtime differences.
+
 As I have access to two separate machines, running Linux, I will be conducting all tests and benchmarks on them. Since their CPUs and specifications vary, it is important to note it down as an independent variable in the experiment - as the results will vary on both machines. Although, what we are interested in, is the difference before and after applying the patch, rather than raw comparison between those two machines; for example, Machine A will be outperforming Machine B - but we are not interested in that.
+
 
 \begin{table}[h]
 \centering
