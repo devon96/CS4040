@@ -108,10 +108,10 @@ As I have access to two separate machines, running Linux, I will be conducting a
 \centering
 \begin{tabular}{|l|l|l|ll}
 \cline{1-3}
-    & Machine A         & Machine B &  &  \\ \cline{1-3}
-CPU & i5-6500 @ 3.20GHz &           &  &  \\ \cline{1-3}
-RAM & 16GB DDR4 2400MHz &           &  &  \\ \cline{1-3}
-GPU & GeForce GTX 1070  &           &  &  \\ \cline{1-3}
+    & Machine A (Workstation)         & Machine B (Laptop) &  &  \\ \cline{1-3}
+CPU & i5-6500 @ 3.20GHz & i7-8550U @ 4.00GHz       &  &  \\ \cline{1-3}
+RAM & 16GB DDR4 2400MHz & 16GB DDR4 2400MHz          &  &  \\ \cline{1-3}
+GPU & GeForce GTX 1070  & Intel UHD 620          &  &  \\ \cline{1-3}
 \end{tabular}%
 \caption{Specifications of testing population}
 \label{tab:machines}
@@ -139,10 +139,9 @@ Additionally, I had no access to hardware running other architectures, such as A
 
 To maximise the significance of the results of my experiment, I will be looking to utilise the following testing suites, in addition to the ones that I have mentioned in the previous section:
 \begin{itemize}
-  \item Geekbench v5.0.4
   \item Phoronix Test Suite v9.2.0m2
+  \item Geekbench v5.0.4
   \item Sysbench v1.0.18
-  \item Busytest v0.1
   \item HardInfo v0.6-alpha
 \end{itemize}
 Each of them is capable of running and measuring expensive CPU operations such as Blowfish, Jack-The-Ripper password cracker or Text / Image Compression. As all of them incorporate various tests, they will produce different results. Depending on the benchmarking tool, either a numerical score is presented (Geekbench) or raw values in seconds to indicate the duration of given operation (Sysbench). Sysbench tests will be repeated 5 times to ensure that no thermal or other sourced throttling occurred. I will not be repeating other tests, as first of all, free evaluation of the suites only allowed for fixed number of tests and the operation overlap with the ones present in Sysbench. 
@@ -163,9 +162,37 @@ The machines will be running under the same load with the same configuration ins
 \section{Results}
 \label{sec:results}
 
+\subsection{Benchmarking suites performance evaluation}
+
+\subsubsection{Phoronix Test Suite}
+
+\subsubsection{Geekbench}
+
+\subsubsection{Sysbench}
+
+\subsubsection{Hardinfo}
+
+\subsection{Cryptographic performance evaluation}
+
+\subsubsection{OpenSSL}
+
+\subsubsection{Cryptsetup}
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l}
+\cline{1-4}
+             & mitigations=on & mitigations=off & Paired t-test p-value &  \\ \cline{1-4}
+AES-XTS 512b & 1910.7 MiB/s   & 2759.7 MiB/s    &         &  \\ \cline{1-4}
+AES-XTS 256b & 2072.7 MiB/s   & 3407.5 MiB/s    &         &  \\ \cline{1-4}
+Twofish-CBC  & 374.7 MiB/s    & 632.2 MiB/s     & 0.04821 &  \\ \cline{1-4}
+\end{tabular}
+\caption{Machine A results }
+\label{tab:machines}
+\end{table}
+
 Present the results. A good way to organise this is via subsections
 for each hypothesis you tested. Include graphs of results
-(e.g.\ Figure~\ref{fig:data}), tests of significance, etc. If you have
+(e.g.\ Figure~), tests of significance, etc. If you have
 negative results, include them. A negative results is just as
 informative and useful as a positive one, sometimes more so.
 
