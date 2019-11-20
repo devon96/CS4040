@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage{enumitem}
 \usepackage{booktabs}
+\usepackage{subfigure}
 \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
 \bibliographystyle{plain}
 \abstract{In my CS4040 report I'd like to evaluate the impact of the discovery of Side-Channel Attacks back in January 2018 with Spectre \& Meltdown leading. As those were utilizing many of the performance reliant features - which had to be rolled back or squashed due to security concerns. The removal resulted in many reports about grossly deteriorated performance. With the patches already in place, I have gone ahead and removed them to compare before and after performance of one- and multi-core performance in different tasks, such as prime calculation or rendering. I will be aiming to diversify tested hardware and software, including platforms such as Windows, Linux and Intel, AMD. Final points will close off the results, concluding with recommendation whether it's reasonable to leave the mitigation disabled in lights of potential vulnerabilities.}
@@ -21,7 +22,9 @@
 
 \section{Introduction}
 \label{sec:intro}
-With speculative execution no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard. Once the processor designers reached a ceiling with potential clock speeds, getting hit by Moore's Law \cite{schaller1997moore} (stating that density of transistors on the circuit board doubles every 18 months), they started looking for different solutions. I will briefly introduce and recap the origin and details of those vulnerabilities, putting more focus the patches that followed.  
+Speculative execution is a feature that was included in modern CPUs by almost all chip designers, significantly boosting the execution time on some very complex operations. With time, those solutions became more and more aggressive, as the competition between manufacturers was very fierce, fighting to beat the competitors in benchmarks, thus winning the favours of reviewers \& consumers.
+
+Perhaps one of the most daunting days that security professionals faced happened on January 3rd, 2018 - when Meltdown \& Spectre attacks were publicized, explaining a serious flaw with speculative execution approach. With the enhancement no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard. 
 
 Personally, I found the topic the most interesting, as the aftermath is still haunting security researches to this day, since the fault was not the software, but inherent architecture was found to be flawed. Moreover, nowadays we are frequently hearing news (most recent being "Fallout"\cite{fallout}) how the newest vulnerability based on side-channel execution has been discovered - with the definite fix being complete hardware replacement with a chip produced after 2017. This forced Intel, AMD, ARM to release very aggressive patches, greatly hurting the benchmarks.
 
@@ -43,7 +46,6 @@ Together, they create a cheap and clever way to speed up the execution of binari
 
 There is also a subtle difference between the nature of attacks described by \textbf{Meltdown} (Variant 3) and \textbf{Spectre} (Variant 1, 2). The former allowed for any arbirtary process to access kernel-space memory, which contains restricted data such as password or even latest keystroke information. The latter - on the other hand - was capable of crossing process or sandbox boundaries, effectively nullyfying the protections provided by virtualised environment or JIT (just-in-time) compilers. This potentially might allow an attacker to deploy malicious binary onto VM cluster (run by a cloud provider such as GCP or AWS) and access information of other users.
 
-\pagebreak
 \begin{lstlisting}[caption=Meltdown PoC,frame=tlrb, numbers=left, firstnumber=1]{Name}
 char testArray[256 * 64];
 evictCache(testArray); // Clear L-cache
@@ -231,7 +233,26 @@ I will be going into more depth as to what could've spoiled this particular test
 
 \subsubsection{OpenSSL}
 
-OpenSSL was used to measure how many hashes the CPU is capable of creating in the span of 10 seconds. To establish statistical significance, for each hashing method the test was repeated for data blocks varying in size. After applying Paired T-Test to each of the 30 samples per Machine, following values were obtained: $p_{a} = 0.009730881344$ and $p_{b} = 0.02688339939$, in both cases $p < 0.05$, so the test is statistically significant.
+OpenSSL was used to measure how many hashes the CPU is capable of creating in the span of 10 seconds. To establish statistical significance, for each hashing method the test was repeated for data blocks varying in size. After applying Paired T-Test to each of the 30 samples per Machine, following values were obtained: $p_{a} = 0.009730881344$ and $p_{b} = 0.02688339939$, in both cases $p < 0.05$, so the test holds statistical significance.
+
+Figures \ref{fig:hashA} and \ref{fig:hashB} present the differences of standard deviations for each of the considered block size, when executed given hashing algorithm on Machine A or Machine B. The differences are minimal, with environments without mitigations performing slightly better, although the regression is less than 1\%. 
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=15cm]{hashA}
+\caption{Hashes created by Machine A}
+\label{fig:hashA}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=15cm]{hashB}
+\caption{Hashes created by Machine B}
+\label{fig:hashB}
+\end{figure}
+
+
+\pagebreak
 
 \subsubsection{Cryptsetup}
 
@@ -275,17 +296,18 @@ Following the tests through Phoronix Suite, there is a clear regression visible 
 
 Interestingly, the Geekbench results had no significance, as the T-Test shown high probability of the differences being caused by random noise. This could have also been caused by the fact that I was using free version of Geekbench limited to only 32-bit instruction set along with limited control over repeated tests. It's an area definitely worth further exploration in order to determine the exact loss (or lack of it) on the tests performed by that software.  
 
+Moreover, the cryptographic performance wasn't as impactful as the context switching or VM access times, with the exceptions of some algorithms (AES-XTS), the regression is less than 1\%. That's the operations most likely to be performed frequently by consumer-level hardware, with problems such as HTTPS/TLS connections being handled regularly.
+
 We can observe see how swapping the variables - machine type and performed test - ends up with different results, yet with similar standard deviation. Moreover, in some situations Machine A was performing better and in others vice versa. This could hint towards the fact that 8\textsuperscript{th} generation and onwards Intel processors have been re-engineered to minimize the impact.  
 
-Unfortunately, I did not have available to me CPU architectures other than Intel, so for future work, it'd be worth to see what's the correlation between Intel, AMD or ARM running same benchmarks and whether observed regressions are observable. AMD at first was adamant that Meltdown was not reproducible on their chips at all in the beginning, but eventually changed their stance \cite{amdsec} and deployed relevant microcode updates having some degree of impact on the computation power of their chips, so further experiment would help with confirming or disproving those claims. 
+Unfortunately, I did not have available to me CPU architectures other than Intel, so for future work, it'd be worth to see what's the correlation between Intel, AMD or ARM running same benchmarks and whether observed regressions are observable. AMD at first was adamant that Meltdown was not reproducible on their chips at all in the beginning, but eventually changed their stance \cite{amdsec} and deployed relevant microcode updates having some degree of impact on the computation power of their chips, so further experiment would help with confirming or disproving those claims. And also, within Intel architecture itself, it'd be interesting to see how consumer chips (used for the tests) behave compared with enterprise-grade hardware (such as Xeon family), seeing how the biggest impacts reported are for machines inside data centers.
+
+Moreover, all benchmarks were performed only on Linux. When constructing future tests, inclusion of more platforms might be interesting to see, for example to compare how MacOS platform degraded in performance before and after deploying the mitigations.
 
 \section{Conclusion}
 \label{sec:conc}
 
-What have you done and why? What have you shown through your
-experiments?
-
-Guide length: 100 words.
+In my report I focused on the impact of the mitigations deployed after the discovery of side-channel attacks by Google's Project Zero. After exploring and providing background of the exact nature of those attacks and the necessity of the fixes, I have performed tests on two different pieces of hardware, each running Intel architecture. Once the results were analysed, it was apparent that performance drop is visible, with the biggest drop observed at the amount of clocks required for context switch. Not all tasks were affected equally though, with only one encryption algorithm performing significantly worse. Although further testing would be needed to establish further implications, such as performance on different architectures or examination whether consumer-graded hardware is prone to be less susceptible. 
 
 \bibliography{myrefs}
 
