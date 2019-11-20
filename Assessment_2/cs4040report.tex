@@ -147,7 +147,9 @@ To maximise the significance of the results of my experiment, I will be looking 
 \end{itemize}
 Each of them is capable of running and measuring expensive CPU operations such as Blowfish, Jack-The-Ripper password cracker or Text / Image Compression. As all of them incorporate various tests, they will produce different results. Depending on the benchmarking tool, either a numerical score is presented (Geekbench) or raw values in seconds to indicate the duration of given operation (Sysbench). All tests will be performed at least 10 times per machine, per patch installed / removed in order to establish statistical significance. 
 
-Finally, to test the second hypothesis, it is possible to utilise the openssl binary found on almost every Linux system. Very handy sub-command called "speed" will continuously run various hashing algorithms (such as MD5, SHA1-512, Whirpool) and measure how many blocks were successfully hashed in given timespan. On the other hand, cryptsetup benchmark can measure the speed of symmetric encryption algorithms, such as AES or DES. Again, each executed 10 times to rule out background noise.
+Finally, to test the second hypothesis, it is possible to utilise the openssl binary found on almost every Linux system. Very handy sub-command called "speed" will continuously run various algorithms (MD5, SHA1, SHA256, SHA512, Whirpool) and measure how many hashes were successfully created in 3 seconds. In order to increase sample size, different sized blocks will be used (16, 64, 256, 1024, 8192, 16384)
+
+To measure cryptographic efficiency for symmetric algorithms cryptsetup benchmark can be used. 
 
 \begin{lstlisting}[caption=Versions of crypsetup and openssl, frame=tlrb, basicstyle=\small]{Name}
 % cryptsetup --version
@@ -161,7 +163,7 @@ The machines will be running under the same load with the same configuration ins
 \section{Results}
 \label{sec:results}
 
-\subsection{Benchmarking suites performance evaluation}
+\subsection{Benchmarking suites evaluation}
 
 \subsubsection{Phoronix Test Suite}
 
@@ -223,35 +225,59 @@ For that case, the faster the context switch happens (i.e., requires fewer cycle
 
 Although, a T-Test can be performed against all different performed tests (21 * 2 in total) for Single and Multi-Core performance. If the tests were to be statistically significant, we would notice similar standard error and standard deviation between results. Sadly, it was not the case in this situation, with $p-values$ of $p_{a} = 0.0534765$ and $p_{b} = 0.072481043$ - in both situation the value being greater than 0.05 meaning that the obtained numbers yield no statistical significance.
 
-I will be going into more depth as to what could've spoiled this particular test, but at first glance, we can predict negligible Spectre impact on operations needed for tasks such as AR / VR, which confirms the reports from earlier paragraphs mentioning that biggest impact would be on servers and their virtualisation capabilities, rather than end-user use cases.
+I will be going into more depth as to what could've spoiled this particular test in the next section, but at first glance, we can predict negligible Spectre impact on operations needed for tasks such as AR / VR, which confirms the reports from earlier paragraphs mentioning that biggest impact would be on servers and their virtualisation capabilities, rather than end-user use cases.
 
 \subsection{Cryptographic performance evaluation}
 
 \subsubsection{OpenSSL}
 
+OpenSSL was used to measure how many hashes the CPU is capable of creating in the span of 10 seconds. To establish statistical significance, for each hashing method the test was repeated for data blocks varying in size. After applying Paired T-Test to each of the 30 samples per Machine, following values were obtained: $p_{a} = 0.009730881344$ and $p_{b} = 0.02688339939$, in both cases $p < 0.05$, so the test is statistically significant.
+
 \subsubsection{Cryptsetup}
+
+Contrary to OpenSSL, \textbf{cryptsetup} is capable of measuring the speed of modern, symmetric cryptographic algorithms. For the purposes for the experiment, most used and modern methods were used: AES-CBC, AES-XTS, Twofish-XTS and Serpent-CBC. Tables \ref{tab:cryptoA} \& \ref{tab:cryptoB} respectively present the mean results of all trial runs, on both test machines. Once performed paired T-Test, it was found that $p < 0.05$.
+
+Carrying on, we notice the biggest impact on AES algorithms, with the most significant difference on AES-XTS using 512-blocks key, reaching even 957 MiB/s. On the other hand, Twofish and Serpent is more resilient to the mitigations, with differences of circa 15 MiB/s. 
+
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|l|l|l}
-\cline{1-4}
-             & mitigations=on & mitigations=off & Paired t-test p-value &  \\ \cline{1-4}
-AES-XTS 512b & 1910.7 MiB/s   & 2901.7 MiB/s    &         &  \\ \cline{1-4}
-AES-XTS 256b & 1942.7 MiB/s   & 3407.5 MiB/s    &         &  \\ \cline{1-4}
-Twofish-CBC  & 374.7 MiB/s    & 832.2 MiB/s     & 0.0395831 &  \\ \cline{1-4}
+\begin{tabular}{@{}lcrrrrr@{}}
+\multicolumn{1}{c}{}          & \multicolumn{1}{l}{} & \multicolumn{2}{c}{WithMitigations}           & \multicolumn{1}{l}{} & \multicolumn{2}{c}{WithoutMitigations}                          \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
+\multicolumn{1}{c}{Algorithm} & Key                  & Encryption   & \multicolumn{1}{l}{Decryption} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{Encryption} & \multicolumn{1}{l}{Decryption} \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
+AES-CBC                       & 128b                 & 1090.6 MiB/s & 3255.8 MiB/s                   &                      & 1123.2 MiB/s                   & 3443.5 MiB/s                   \\
+AES-XTS                       & 512b                 & 1907.2 MiB/s & 1910.7 MiB/s                   &                      & 2761.5 MiB/s                   & 2759.7 MiBs                    \\
+Twofish-XTS                   & 256b                 & 371.4 MiB/s  & 373.9 MiB/s                    &                      & 383.3 MiB/s                    & 385.4 MiB/s                    \\
+Serpent-CBC                   & 256b                 & 93.9 MiBs    & 705.7 MiB/s                    &                      & 93.5 MiB/s                     & 712.3 MiB/s                    \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
 \end{tabular}
-\caption{Machine A results }
-\label{tab:cryptoa}
+\caption{cryptsetup benchmark on MachineA}
+\label{tab:cryptoA}
 \end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lcrrrrr@{}}
+\multicolumn{1}{c}{}          & \multicolumn{1}{l}{} & \multicolumn{2}{c}{WithMitigations}           & \multicolumn{1}{l}{} & \multicolumn{2}{c}{WithoutMitigations}                          \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
+\multicolumn{1}{c}{Algorithm} & Key                  & Encryption   & \multicolumn{1}{r}{Decryption} & \multicolumn{1}{r}{} & \multicolumn{1}{l}{Encryption} & \multicolumn{1}{l}{Decryption} \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
+AES-CBC                       & 128b                 & 1185.9 MiB/s & 3526.9 MiB/s                   &                      & 1203.9 MiB/s                   & 3749.7 MiB/s                   \\
+AES-XTS                       & 512b                 & 2024.9 MiB/s & 2037.8 MiB/s                   &                      & 2981.7 MiB/s                   & 2988.8 MiBs                    \\
+Twofish-XTS                   & 256b                 & 402.6 MiB/s  & 404.5 MiB/s                    &                      & 416.2 MiB/s                    & 417.8 MiB/s                    \\
+Serpent-CBC                   & 256b                 & 101.1 MiBs   & 762.9 MiB/s                    &                      & 101.6 MiB/s                    & 780 MiB/s                      \\ \cmidrule(r){1-4} \cmidrule(l){6-7} 
+\end{tabular}
+\caption{cryptsetup benchmark on Machine B}
+\label{tab:cryptoB}
+\end{table}
+
 
 \section{Discussion}
 \label{sec:discuss}
 
-What do the results say? What have you learned from the
-experiments? Have you identified a correlation between variables, or
-causation? What are the limitations of what you've done? What further
-experiments might be of benefit?
+Following the tests through Phoronix Suite, there is a clear regression visible for both Machine A and Machine B - the biggest being ctx-clock, which actually was excepted. We can suspect that KAISER (described in section 2) is at fault here - since the address space is no longer mapped directly to each process, the CPU has to compute all address spaces every time context switch is requested in order to switch from User to Kernel mode. For the remaining two tests, they were mostly benchmarking access times to virtual memory and how well the CPU is capable of handling page faults, again, task that was sped up by a magnitude thanks to speculative execution.
 
-Guide length: 400 words.
+Interestingly, the Geekbench results had no significance, as the T-Test shown high probability of the differences being caused by random noise. This could have also been caused by the fact that I was using free version of Geekbench limited to only 32-bit instruction set along with limited control over repeated tests. It's an area definitely worth further exploration in order to determine the exact loss (or lack of it) on the tests performed by that software.  
+
+We can observe see how swapping the variables - machine type and performed test - ends up with different results, yet with similar standard deviation. Moreover, in some situations Machine A was performing better and in others vice versa. This could hint towards the fact that 8\textsuperscript{th} generation and onwards Intel processors have been re-engineered to minimize the impact.  
+
+Unfortunately, I did not have available to me CPU architectures other than Intel, so for future work, it'd be worth to see what's the correlation between Intel, AMD or ARM running same benchmarks and whether observed regressions are observable. AMD at first was adamant that Meltdown was not reproducible on their chips at all in the beginning, but eventually changed their stance \cite{amdsec} and deployed relevant microcode updates having some degree of impact on the computation power of their chips, so further experiment would help with confirming or disproving those claims. 
 
 \section{Conclusion}
 \label{sec:conc}
