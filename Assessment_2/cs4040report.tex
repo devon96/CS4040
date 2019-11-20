@@ -9,6 +9,7 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{enumitem}
+\usepackage{booktabs}
 \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
 \bibliographystyle{plain}
 \abstract{In my CS4040 report I'd like to evaluate the impact of the discovery of Side-Channel Attacks back in January 2018 with Spectre \& Meltdown leading. As those were utilizing many of the performance reliant features - which had to be rolled back or squashed due to security concerns. The removal resulted in many reports about grossly deteriorated performance. With the patches already in place, I have gone ahead and removed them to compare before and after performance of one- and multi-core performance in different tasks, such as prime calculation or rendering. I will be aiming to diversify tested hardware and software, including platforms such as Windows, Linux and Intel, AMD. Final points will close off the results, concluding with recommendation whether it's reasonable to leave the mitigation disabled in lights of potential vulnerabilities.}
@@ -196,10 +197,33 @@ Finally, \textbf{ctx\_clock} was also evaluated. In that particular case, number
 \label{fig:ctx}
 \end{figure}
 
-For that case, the faster the context switch happens (i.e., requires fewer cycles), the better performing the chip is. Out of all three of the tests performed, the regression has been the most significant; with Machine A needing almost 420\% extra clock cycles and Machine B needing extra 80\%.
+For that case, the faster the context switch happens (i.e., requires fewer cycles), the better performing the chip is. Out of all three of the tests performed, the regression has been the most significant; with Machine A needing almost 420\% extra clock cycles and Machine B needing extra 80\%, when the patches for Spectre are enabled.
 
 \subsubsection{Geekbench}
 
+\textbf{Geekbench} is a fully equipped, all-in-one testing suite, often used for performance in Machine Leaning or gaming. As it's a commercially available benchmarking tool, additional tests are performed automatically and unfortunately $p-value$ of the results is not available - the only final outcome is the raw score of the machine. Moreover, the trial version that I was utilising permits only benchmarks on 32-bit applications, so the results may be different for 64-bit architectures.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llr}
+\cline{2-3}
+\multicolumn{1}{c|}{}                   & \multicolumn{2}{c|}{Machine A}                                                 \\ \cline{2-3} 
+\multicolumn{1}{l|}{}                   & \multicolumn{1}{l|}{WithMitigations} & \multicolumn{1}{r|}{WithoutMitigations} \\ \hline
+\multicolumn{1}{|l|}{Single-Core Score} & \multicolumn{1}{l|}{1055}            & \multicolumn{1}{r|}{1052}               \\ \hline
+\multicolumn{1}{|l|}{Multi-Core Score}  & \multicolumn{1}{l|}{3562}            & \multicolumn{1}{r|}{3547}               \\ \hline
+                                        &                                      & \multicolumn{1}{l}{}                    \\ \cline{2-3} 
+\multicolumn{1}{l|}{}                   & \multicolumn{2}{c|}{Machine B}                                                 \\ \cline{2-3} 
+\multicolumn{1}{l|}{}                   & \multicolumn{1}{l|}{WithMitigations} & \multicolumn{1}{r|}{WithoutMitigations} \\ \hline
+\multicolumn{1}{|l|}{Single-Core Score} & \multicolumn{1}{l|}{1064}            & \multicolumn{1}{r|}{1078}               \\ \hline
+\multicolumn{1}{|l|}{Multi-Core Score}  & \multicolumn{1}{l|}{3892}            & \multicolumn{1}{r|}{3924}               \\ \hline
+\end{tabular}
+\caption{Scores reported by Geekbench}
+\label{tab:geekbench}
+\end{table}
+
+Although, a T-Test can be performed against all different performed tests (21 * 2 in total) for Single and Multi-Core performance. If the tests were to be statistically significant, we would notice similar standard error and standard deviation between results. Sadly, it was not the case in this situation, with $p-values$ of $p_{a} = 0.0534765$ and $p_{b} = 0.072481043$ - in both situation the value being greater than 0.05 meaning that the obtained numbers yield no statistical significance.
+
+I will be going into more depth as to what could've spoiled this particular test, but at first glance, we can predict negligible Spectre impact on operations needed for tasks such as AR / VR, which confirms the reports from earlier paragraphs mentioning that biggest impact would be on servers and their virtualisation capabilities, rather than end-user use cases.
 
 \subsection{Cryptographic performance evaluation}
 
