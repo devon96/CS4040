@@ -101,7 +101,7 @@ In order to answer the research question and evaluate how big and whether meanin
 
 Since the mitigations for the vulnerabilities described in previous sections heavily modify or straight-up disable a lot of performance features present in modern chips, it will be necessary to perform benchmarking on the CPUs themselves with and without those mitigations installed. Running generic speed tests on the performance of the chips side-to-side with the same CPU without the patches will result in potential runtime differences.
 
-As I have access to two separate machines, running Linux, I will be conducting all tests and benchmarks on them. Since their CPUs and specifications vary, it is important to note it down as an independent variable in the experiment - as the results will vary on both machines. Although, what we are interested in, is the difference before and after applying the patch, rather than raw comparison between those two machines; for example, Machine A will be outperforming Machine B - but we are not interested in that.
+As I have access to two separate machines running Linux, I will be conducting all tests and benchmarks on them. Since their CPUs and specifications vary, it is important to note it down as an independent variable in the experiment - as the results will vary on both machines. Although, what we are interested in, is the difference before and after applying the patch, rather than raw comparison between those two machines; for example, Machine A will be outperforming Machine B - but we are not interested in that.
 
 
 \begin{table}[h]
@@ -137,16 +137,16 @@ LOGO=archlinux
 
 Additionally, I had no access to hardware running other architectures, such as ARM or AMD, so those will also not be compared. Intel architecture was the one that was affected the most when it comes to Meltdown and thus the difference is going to be the most prominent on those chips.
 
+Another important independent variable can be identified as benchmark / operation performed by the CPU. As there are various operations, sometimes abusing access to L-cache, or simply omitting it, I will be measuring performance with respect to different factors, such as context switching or ray tracing.
+
 To maximise the significance of the results of my experiment, I will be looking to utilise the following testing suites, in addition to the ones that I have mentioned in the previous section:
 \begin{itemize}
-  \item Phoronix Test Suite v9.2.0m2
-  \item Geekbench v5.0.4
-  \item Sysbench v1.0.18
-  \item HardInfo v0.6-alpha
+  \item \textbf{Phoronix Test Suite v9.2.0m2} - from within the suite, I will be running \textbf{Hackbench} (performance of communicating, scheduled tasks), \textbf{Stress-NG} (tests socket activity) and \textbf{ctx\_clock} (measures context switching) tests. Phoronix allows for multiple trial runs in order to establish p-value, I will be running each test 10 times.
+  \item \textbf{Geekbench v5.0.4} - mostly geared towards simulating real-world scenarios, produces one and multi-core performance - tests are constructed with Augmented Reality and Machine Learning applications in mind. \cite{geekbench}
 \end{itemize}
-Each of them is capable of running and measuring expensive CPU operations such as Blowfish, Jack-The-Ripper password cracker or Text / Image Compression. As all of them incorporate various tests, they will produce different results. Depending on the benchmarking tool, either a numerical score is presented (Geekbench) or raw values in seconds to indicate the duration of given operation (Sysbench). Sysbench tests will be repeated 5 times to ensure that no thermal or other sourced throttling occurred. I will not be repeating other tests, as first of all, free evaluation of the suites only allowed for fixed number of tests and the operation overlap with the ones present in Sysbench. 
+Each of them is capable of running and measuring expensive CPU operations such as Blowfish, Jack-The-Ripper password cracker or Text / Image Compression. As all of them incorporate various tests, they will produce different results. Depending on the benchmarking tool, either a numerical score is presented (Geekbench) or raw values in seconds to indicate the duration of given operation (Sysbench). All tests will be performed at least 10 times per machine, per patch installed / removed in order to establish statistical significance. 
 
-Finally, to test the second hypothesis, it is possible to utilise the openssl binary found on almost every Linux system. Very handy sub-command called "speed" will continuously run various hashing algorithms (such as MD5, SHA1-512, Whirpool) and measure how many blocks were successfully hashed in given timespan. On the other hand, cryptsetup benchmark can measure the speed of symmetric encryption algorithms, such as AES or DES. 
+Finally, to test the second hypothesis, it is possible to utilise the openssl binary found on almost every Linux system. Very handy sub-command called "speed" will continuously run various hashing algorithms (such as MD5, SHA1-512, Whirpool) and measure how many blocks were successfully hashed in given timespan. On the other hand, cryptsetup benchmark can measure the speed of symmetric encryption algorithms, such as AES or DES. Again, each executed 10 times to rule out background noise.
 
 \begin{lstlisting}[caption=Versions of crypsetup and openssl, frame=tlrb, basicstyle=\small]{Name}
 % cryptsetup --version
@@ -155,9 +155,7 @@ cryptsetup 2.2.2
 OpenSSL 1.1.1d  10 Sep 2019
 \end{lstlisting}
 
-The machines will be running under the same load with the same configuration installed. To eliminate potential noise, no unnecessary background programs will be running and if they are necessary, both before and after tests will have same runtime, which can be monitored using UNIX top command, also verifying load average.
-
-
+The machines will be running under the same load with the same configuration installed. To eliminate potential noise, no unnecessary background programs will be running and if they are necessary, both before and after tests will have same runtime, which can be monitored using UNIX top command, also verifying load average. 
 
 \section{Results}
 \label{sec:results}
@@ -166,11 +164,42 @@ The machines will be running under the same load with the same configuration ins
 
 \subsubsection{Phoronix Test Suite}
 
+Starting off with \textbf{Hackbench} test, it was an experiment trying to stress the Linux kernel scheduler responsible for firing off and preparing new jobs for the CPU. Test was repeated for 10 times, for both Machines A \& B. Once compared the results from setup with enabled mitigations and the results from the one without, a $p-value$ can be obtained through Paired T-Test - $p_{a} = 6.25 * 10^{-14}$ and $p_{b} = 6.38 * 10^{-19}$, confirming statistical significance of my findings. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm]{hack}
+\caption{Results from Hackbench}
+\label{fig:hackbench}
+\end{figure}
+
+Figure \ref{fig:hackbench} displays the exact differences between data when run with and without mitigations on both Machines. For Machine A we can observe almost 40\% regression after applying the patches and for Machine B the regression stands at 41\%. The results should be interpreted in ``less is better`` manner, as the numbers represent amount of time in seconds required to complete all scheduled tasks.
+
+
+Moving on to the next part of Phoronix, which is \textbf{Stress-NG}. It used to be a part of the standard UNIX stress testing, used to verify whether the machine operates correctly over heavy load, albeit it can also be used to measure the number of operations per second it performs in a given timespan. Same as before, the test was repeated for 10 times, yielding the following $p-values$: $p_{a} = 3.13 * 10^{-30}$ and $p_{b} = 2.27 * 10^{-13}$ - in both cases, the value being less than $0.05$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm]{stress}
+\caption{Results from Stress-NG}
+\label{fig:stress}
+\end{figure}
+
+The regression is slightly less prominent in that situation, with Machine A performing approximately 25\% less of ``Bogus Operations``, along with Machine B performing approximately 18\% less. Contrary to the previous chart, higher number of performed operations indicates better performance, thus putting no mitigations systems at an advantage.   
+
+Finally, \textbf{ctx\_clock} was also evaluated. In that particular case, number of clock cycles required for a context switch (e.g., from user mode into kernel mode) is measured. The test again has been repeated for 10 times, ending up with: $p_{a} = 1.08 * 10^{-21}$ and $p_{b} = 2.81 * 10^{-25}$, confirming significance.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm]{ctx}
+\caption{Results from ctx\_clock}
+\label{fig:ctx}
+\end{figure}
+
+For that case, the faster the context switch happens (i.e., requires fewer cycles), the better performing the chip is. Out of all three of the tests performed, the regression has been the most significant; with Machine A needing almost 420\% extra clock cycles and Machine B needing extra 80\%.
+
 \subsubsection{Geekbench}
 
-\subsubsection{Sysbench}
-
-\subsubsection{Hardinfo}
 
 \subsection{Cryptographic performance evaluation}
 
