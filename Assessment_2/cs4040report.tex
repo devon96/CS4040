@@ -24,11 +24,11 @@
 \label{sec:intro}
 Speculative execution is a feature that was included in modern CPUs by almost all chip designers, significantly boosting the execution time on some very complex operations. With time, those solutions became more and more aggressive, as the competition between manufacturers was very fierce, fighting to beat the competitors in benchmarks, thus winning the favours of reviewers \& consumers.
 
-Perhaps one of the most daunting days that security professionals faced happened on January 3rd, 2018 - when Meltdown \& Spectre attacks were publicized, explaining a serious flaw with speculative execution approach. With the enhancement no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Probably the most harming aspect was that speculative execution was at the time an industry standard. 
+Perhaps one of the most daunting days that security professionals faced happened on January 3rd, 2018 - when Meltdown \& Spectre attacks were publicized, explaining a serious flaw with speculative execution approach. With the enhancement no longer considered safe, modern CPU manufacturers were forced to drop these features in favour of enhancing security. But at the same time, it resulted in sacrificing the performance of the chips. Perhaps the most harming aspect was that speculative execution was at the time an industry standard. 
 
 Personally, I found the topic the most interesting, as the aftermath is still haunting security researches to this day, since the fault was not the software, but inherent architecture was found to be flawed. Moreover, nowadays we are frequently hearing news (most recent being "Fallout"\cite{fallout}) how the newest vulnerability based on side-channel execution has been discovered - with the definite fix being complete hardware replacement with a chip produced after 2017. This forced Intel, AMD, ARM to release very aggressive patches, greatly hurting the benchmarks.
 
-This has also raised ethical questions - since some of the affected machines suffered as much as 50\% drop in performance. In the eyes of law, this could classify as false advertising which naturally was followed by many class-action lawsuits. As stated by Intel in their 2017 Annual report, as of February 2018, they were facing 30 customer suits along with two securities \cite{intelreport}. Intel perhaps is the company that was the most under fire, since Variant 1, also known as Meltdown, was mostly apparent in their chips, although Variant 2 \& 2 were replicated in almost all consumer chips (including AMD et al.).
+This has also raised ethical questions - since some of the affected machines suffered as much as 50\% drop in performance. In the eyes of law, it could be classified as false advertising which naturally was followed by many class-action lawsuits. As stated by Intel in their 2017 Annual report, as of February 2018, they were facing 30 customer suits along with two securities \cite{intelreport}. Intel perhaps is the company that was the most under fire, since Variant 1, also known as Meltdown, was mostly apparent in their chips, although Variant 2 \& 2 were replicated in almost all consumer chips (including AMD et al.).
 
 Computing community and hardware architects were faced with a difficult dilemma - how much of security are we willing to sacrifice in favour of increased performance?
 
@@ -88,7 +88,7 @@ Vulnerability Spectre v2:        Vulnerable, IBPB: disabled
 
 For Windows, on the other hand, the mitigations are slightly harder to disable, although it can be achieved by tweaking Windows Registry \cite{msoft}. While the impact on consumer Windows version can be negligible (according to Microsoft\cite{myerson2018understanding}), Server edition of their Operating System was particularly susceptible to slowdowns, especially during Input/Output operations. Microsoft decided to leave the decision of enabling the patch up to system administrators, leaving the option enabled by default. Alas, mitigations for CVE-2017-5753 (Spectre Variant 1) cannot be disabled for Windows at the moment. To work around this, it is still possible to install Windows 10 Version 1607 (From April 2016) and perform all experiments in that environment - with no internet connection to avoid automatic updates. Although this might also cause inconsistency, as newer revision might also have included unrelated performance fixes - thus the test would have to be performed on both older revision of Windows 10 and Windows Server with only disabled mitigations.
 
-At this point, with a vulnerable system, we have several ways to obtain before-after comparison of performance, as mentioned: each platform offering different solutions. Linux has open access to compiled byte-code with an option of disabling optimizers potentially spoiling the results. Usually, to benchmark the performance of a CPU, we would be looking at how quickly it can solve complex operations. One of the examples being prime numbers calculations or matrices multiplication. There are two open-source packages which wrap around those operations, producing a concise report on performed CPU Cycles, page faults, thermal readings etc. - stress-ng \cite{stressng} and sysbench \cite{sysbench}  
+At this point, with a vulnerable system, we have several ways to obtain before-after comparison of performance, as mentioned: each platform offering different solutions. Linux has open access to compiled byte-code with an option of disabling optimizers potentially spoiling the results. Usually, to benchmark the performance of a CPU, we would be looking at how quickly it can solve complex operations. One of the examples being prime numbers calculations or matrices multiplication. There are two example open-source packages which wrap around those operations, producing a concise report on performed CPU Cycles, page faults, thermal readings etc. - stress-ng \cite{stressng} and sysbench. \cite{sysbench}  
 
 With Windows, it is slightly more difficult to access direct CPU registers from the OS - additionally, all the compiled code is subject to many optimizations, which might introduce variance and inconsistencies in the results. The most efficient way would be to utilize closed-source, proprietary software created specifically for benchmarking (used mostly to compare and rank consumer-grade products), which can extract raw performance data. Most popular choice nowadays is Cinebench along with 3DMark which at the same time could determine whether the slowdowns in CPU could also be affecting external GPU.
 
@@ -99,12 +99,12 @@ For the purposes of this research, I will be focusing only on readings obtained 
 In order to answer the research question and evaluate how big and whether meaningful the impact was, we can devise the following null hypotheses: 
 \begin{itemize}
   \item For each of the benchmarking utilities run on the hardware, Spectre mitigations do not cause statistically significant differences in the results.
-  \item Runtime of CPU-intensive operations (such as encryption) does not increase with enabled mitigations for Spectre.
+  \item Runtime of CPU-intensive operations (such as encryption) does not significantly increase with enabled mitigations for Spectre.
 \end{itemize}
 
-Since the mitigations for the vulnerabilities described in previous sections heavily modify or straight-up disable a lot of performance features present in modern chips, it will be necessary to perform benchmarking on the CPUs themselves with and without those mitigations installed. Running generic speed tests on the performance of the chips side-to-side with the same CPU without the patches will result in potential runtime differences.
+Since the mitigations for the vulnerabilities described in previous sections heavily modify or straight-up disable a lot of performance features present in modern chips, it will be necessary to perform benchmarking on the CPUs themselves with and without those mitigations installed. Running generic speed tests on the performance of the environments side-to-side with the same CPU without the patches will result in potential runtime differences.
 
-As I have access to two separate machines running Linux, I will be conducting all tests and benchmarks on them. Since their CPUs and specifications vary, it is important to note it down as an independent variable in the experiment - as the results will vary on both machines. Although, what we are interested in, is the difference before and after applying the patch, rather than raw comparison between those two machines; for example, Machine A will be outperforming Machine B - but we are not interested in that.
+As I have access to two separate machines running Linux, I will be conducting all tests and benchmarks on them in parallel. Since their CPUs and specifications vary, it is important to note it down as an independent variable in the experiment - as the results will vary on both machines. Although, what we are interested in, is the difference before and after applying the patch, rather than raw comparison between those two machines; for example, in some cases one will be outperforming the other - but we are not interested in that.
 
 
 \begin{table}[h]
@@ -138,20 +138,20 @@ BUG_REPORT_URL="https://bugs.archlinux.org/"
 LOGO=archlinux
 \end{lstlisting}
 
-Additionally, I had no access to hardware running other architectures, such as ARM or AMD, so those will also not be compared. Intel architecture was the one that was affected the most when it comes to Meltdown and thus the difference is going to be the most prominent on those chips.
+Additionally, I had no access to hardware running other architectures, such as ARM or AMD, so those will also not be compared. Intel architecture was the one that was affected the most when it comes to Meltdown and thus the difference is expected to be the most prominent on those chips.
 
 Another important independent variable can be identified as benchmark / operation performed by the CPU. As there are various operations, sometimes abusing access to L-cache, or simply omitting it, I will be measuring performance with respect to different factors, such as context switching or ray tracing.
 
 To maximise the significance of the results of my experiment, I will be looking to utilise the following testing suites, in addition to the ones that I have mentioned in the previous section:
 \begin{itemize}
-  \item \textbf{Phoronix Test Suite v9.2.0m2} - from within the suite, I will be running \textbf{Hackbench} (performance of communicating, scheduled tasks), \textbf{Stress-NG} (tests socket activity) and \textbf{ctx\_clock} (measures context switching) tests. Phoronix allows for multiple trial runs in order to establish p-value, I will be running each test 10 times.
+  \item \textbf{Phoronix Test Suite v9.2.0m2} - from within the suite, I will be running \textbf{Hackbench} (performance of communicating, scheduled tasks), \textbf{Stress-NG} (tests socket activity) and \textbf{ctx\_clock} (measures context switching) tests. Phoronix allows for multiple runs in order to establish p-value, so each of them will be executed with 10 trial runs.
   \item \textbf{Geekbench v5.0.4} - mostly geared towards simulating real-world scenarios, produces one and multi-core performance - tests are constructed with Augmented Reality and Machine Learning applications in mind. \cite{geekbench}
 \end{itemize}
 Each of them is capable of running and measuring expensive CPU operations such as Blowfish, Jack-The-Ripper password cracker or Text / Image Compression. As all of them incorporate various tests, they will produce different results. Depending on the benchmarking tool, either a numerical score is presented (Geekbench) or raw values in seconds to indicate the duration of given operation (Sysbench). All tests will be performed at least 10 times per machine, per patch installed / removed in order to establish statistical significance. 
 
 Finally, to test the second hypothesis, it is possible to utilise the openssl binary found on almost every Linux system. Very handy sub-command called "speed" will continuously run various algorithms (MD5, SHA1, SHA256, SHA512, Whirpool) and measure how many hashes were successfully created in 3 seconds. In order to increase sample size, different sized blocks will be used (16, 64, 256, 1024, 8192, 16384)
 
-To measure cryptographic efficiency for symmetric algorithms cryptsetup benchmark can be used. 
+To measure cryptographic efficiency for symmetric algorithms cryptsetup benchmark can be used. The utility will provide the speed with which particular symmetric encryption algorithms are executed (AES, Twofish, Serpent).
 
 \begin{lstlisting}[caption=Versions of crypsetup and openssl, frame=tlrb, basicstyle=\small]{Name}
 % cryptsetup --version
@@ -160,7 +160,7 @@ cryptsetup 2.2.2
 OpenSSL 1.1.1d  10 Sep 2019
 \end{lstlisting}
 
-The machines will be running under the same load with the same configuration installed. To eliminate potential noise, no unnecessary background programs will be running and if they are necessary, both before and after tests will have same runtime, which can be monitored using UNIX top command, also verifying load average. 
+The machines will be running under the same load with the same configuration installed. To eliminate potential noise, no unnecessary background programs will be running and if they are necessary, both before and after tests will have same runtime, which will be monitored using UNIX top command, also verifying reported load average. 
 
 \section{Results}
 \label{sec:results}
@@ -181,7 +181,7 @@ Starting off with \textbf{Hackbench} test, it was an experiment trying to stress
 Figure \ref{fig:hackbench} displays the exact differences between data when run with and without mitigations on both Machines. For Machine A we can observe almost 40\% regression after applying the patches and for Machine B the regression stands at 41\%. The results should be interpreted in ``less is better`` manner, as the numbers represent amount of time in seconds required to complete all scheduled tasks.
 
 
-Moving on to the next part of Phoronix, which is \textbf{Stress-NG}. It used to be a part of the standard UNIX stress testing, used to verify whether the machine operates correctly over heavy load, albeit it can also be used to measure the number of operations per second it performs in a given timespan. Same as before, the test was repeated for 10 times, yielding the following $p-values$: $p_{a} = 3.13 * 10^{-30}$ and $p_{b} = 2.27 * 10^{-13}$ - in both cases, the value being less than $0.05$.
+Moving on to the next part of Phoronix, which is \textbf{Stress-NG}. It's part of the standard UNIX stress testing, used to verify whether the machine operates correctly over heavy load, albeit it can also be used to measure the number of operations per second it performs in a given timespan. Same as before, the test was repeated for 10 times, yielding the following $p-values$: $p_{a} = 3.13 * 10^{-30}$ and $p_{b} = 2.27 * 10^{-13}$ - in both cases, the value being less than $0.05$.
 
 \begin{figure}[h]
 \centering
@@ -190,7 +190,7 @@ Moving on to the next part of Phoronix, which is \textbf{Stress-NG}. It used to 
 \label{fig:stress}
 \end{figure}
 
-The regression is slightly less prominent in that situation, with Machine A performing approximately 25\% less of ``Bogus Operations``, along with Machine B performing approximately 18\% less. Contrary to the previous chart, higher number of performed operations indicates better performance, thus putting no mitigations systems at an advantage.   
+The regression is slightly less prominent in that situation, with Machine A performing approximately 25\% less of ``Bogus Operations`` (for stress, those are prime numbers calculation), along with Machine B performing approximately 18\% less. Contrary to the previous chart, higher number of performed operations indicates better performance, thus putting no mitigations systems at an advantage.   
 
 Finally, \textbf{ctx\_clock} was also evaluated. In that particular case, number of clock cycles required for a context switch (e.g., from user mode into kernel mode) is measured. The test again has been repeated for 10 times, ending up with: $p_{a} = 1.08 * 10^{-21}$ and $p_{b} = 2.81 * 10^{-25}$, confirming significance.
 
@@ -201,11 +201,11 @@ Finally, \textbf{ctx\_clock} was also evaluated. In that particular case, number
 \label{fig:ctx}
 \end{figure}
 
-For that case, the faster the context switch happens (i.e., requires fewer cycles), the better performing the chip is. Out of all three of the tests performed, the regression has been the most significant; with Machine A needing almost 420\% extra clock cycles and Machine B needing extra 80\%, when the patches for Spectre are enabled.
+For that case, the faster the context switch happens (i.e., requires fewer cycles), the better performing the chip is. Out of all three of the tests performed, the regression has been the most significant; with Machine A needing almost 420\% extra clock cycles and Machine B needing extra 80\%, when the patches for side-channel attacks are enabled.
 
 \subsubsection{Geekbench}
 
-\textbf{Geekbench} is a fully equipped, all-in-one testing suite, often used for performance in Machine Leaning or gaming. As it's a commercially available benchmarking tool, additional tests are performed automatically and unfortunately $p-value$ of the results is not available - the only final outcome is the raw score of the machine. Moreover, the trial version that I was utilising permits only benchmarks on 32-bit applications, so the results may be different for 64-bit architectures.
+\textbf{Geekbench} is a fully equipped, all-in-one testing suite, often used for performance in Machine Learning or gaming. As it's a commercially available benchmarking tool, additional tests are performed automatically and unfortunately $p-value$ of the results is not available - the only final outcome is the raw score of the machine. Moreover, the trial version that I was utilising permits only benchmarks on 32-bit applications, so the results may be different for 64-bit architectures.
 
 \begin{table}[h]
 \centering
@@ -225,9 +225,9 @@ For that case, the faster the context switch happens (i.e., requires fewer cycle
 \label{tab:geekbench}
 \end{table}
 
-Although, a T-Test can be performed against all different performed tests (21 * 2 in total) for Single and Multi-Core performance. If the tests were to be statistically significant, we would notice similar standard error and standard deviation between results. Sadly, it was not the case in this situation, with $p-values$ of $p_{a} = 0.0534765$ and $p_{b} = 0.072481043$ - in both situation the value being greater than 0.05 meaning that the obtained numbers yield no statistical significance.
+Although, a T-Test can still be performed against all different performed tests ($21 * 2$ in total) for Single and Multi-Core performance. If the tests were to be statistically significant, we would notice similar standard error and standard deviation between results measuring ray-tracing, text-compression etc. Sadly, it was not the case in this situation, with $p-values$ of $p_{a} = 0.0534765$ and $p_{b} = 0.072481043$ - in both situation the value being greater than 0.05 meaning that the obtained numbers yield no statistical significance.
 
-I will be going into more depth as to what could've spoiled this particular test in the next section, but at first glance, we can predict negligible Spectre impact on operations needed for tasks such as AR / VR, which confirms the reports from earlier paragraphs mentioning that biggest impact would be on servers and their virtualisation capabilities, rather than end-user use cases.
+Even with the lack of significance, we can tell that the reported final scores are very similar before / after applied mitigations for both platforms. I will be going into more depth as to what could've spoiled this particular test in the next section, but at first glance, we can speculate negligible Spectre impact on operations needed for tasks such as AR / VR, which confirms the reports from earlier paragraphs mentioning that biggest impact would be on servers and their virtualisation capabilities, rather than end-user use cases.
 
 \subsection{Cryptographic performance evaluation}
 
@@ -235,18 +235,18 @@ I will be going into more depth as to what could've spoiled this particular test
 
 OpenSSL was used to measure how many hashes the CPU is capable of creating in the span of 10 seconds. To establish statistical significance, for each hashing method the test was repeated for data blocks varying in size. After applying Paired T-Test to each of the 30 samples per Machine, following values were obtained: $p_{a} = 0.009730881344$ and $p_{b} = 0.02688339939$, in both cases $p < 0.05$, so the test holds statistical significance.
 
-Figures \ref{fig:hashA} and \ref{fig:hashB} present the differences of standard deviations for each of the considered block size, when executed given hashing algorithm on Machine A or Machine B. The differences are minimal, with environments without mitigations performing slightly better, although the regression is less than 1\%. 
+Figures \ref{fig:hashA} and \ref{fig:hashB} present the differences of standard deviations for each of the considered block size, when executed given hashing algorithm on Machine A or Machine B. The differences are minimal, with environments without mitigations performing slightly better, although the regression is relatively low sitting approximately at $0.18\% \pm 0.04\%$ depending on the hashing method. 
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=15cm]{hashA}
+\includegraphics[width=13cm]{hashA}
 \caption{Hashes created by Machine A}
 \label{fig:hashA}
 \end{figure}
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=15cm]{hashB}
+\includegraphics[width=13cm]{hashB}
 \caption{Hashes created by Machine B}
 \label{fig:hashB}
 \end{figure}
@@ -292,17 +292,19 @@ Serpent-CBC                   & 256b                 & 101.1 MiBs   & 762.9 MiB/
 \section{Discussion}
 \label{sec:discuss}
 
-Following the tests through Phoronix Suite, there is a clear regression visible for both Machine A and Machine B - the biggest being ctx-clock, which actually was excepted. We can suspect that KAISER (described in section 2) is at fault here - since the address space is no longer mapped directly to each process, the CPU has to compute all address spaces every time context switch is requested in order to switch from User to Kernel mode. For the remaining two tests, they were mostly benchmarking access times to virtual memory and how well the CPU is capable of handling page faults, again, task that was sped up by a magnitude thanks to speculative execution.
+Following the tests through Phoronix Suite, there is a clear regression visible for both Machine A and Machine B - the biggest being ctx-clock, which actually was excepted. We can suspect that KAISER (described in section 2) is at fault here - since the address space is no longer mapped directly to each process, the CPU has to compute all address spaces every time context switch is requested in order to switch from User to Kernel mode. For the remaining two tests, they were mostly benchmarking access times to virtual memory and how well the CPU is capable of handling page faults, again, tasks that were normally sped up by a magnitude, thanks to the speculative execution, suffered more than 20\% regression with the mitigations enabled.
 
-Interestingly, the Geekbench results had no significance, as the T-Test shown high probability of the differences being caused by random noise. This could have also been caused by the fact that I was using free version of Geekbench limited to only 32-bit instruction set along with limited control over repeated tests. It's an area definitely worth further exploration in order to determine the exact loss (or lack of it) on the tests performed by that software.  
+Interestingly, the Geekbench results had no significance, as the T-Test shown high probability of the differences being caused by random noise. This could have also been caused by the fact that I was using free version of Geekbench limited to only 32-bit instruction set along with limited control over repeated tests. It's an area definitely worth further exploration in order to determine the exact regression (or perhaps lack of it) on the tests performed by that software.  
 
 Moreover, the cryptographic performance wasn't as impactful as the context switching or VM access times, with the exceptions of some algorithms (AES-XTS), the regression is less than 1\%. That's the operations most likely to be performed frequently by consumer-level hardware, with problems such as HTTPS/TLS connections being handled regularly.
 
-We can observe see how swapping the variables - machine type and performed test - ends up with different results, yet with similar standard deviation. Moreover, in some situations Machine A was performing better and in others vice versa. This could hint towards the fact that 8\textsuperscript{th} generation and onwards Intel processors have been re-engineered to minimize the impact.  
+We can observe see how swapping the variables - machine type and performed test - ends up with different results, yet with similar standard deviation. Moreover, in some situations Machine A was performing better and in others vice versa. This could hint towards the fact that 8\textsuperscript{th} generation and onwards Intel processors (which Machine B was equipped with) have been re-engineered to minimize the impact.  
 
 Unfortunately, I did not have available to me CPU architectures other than Intel, so for future work, it'd be worth to see what's the correlation between Intel, AMD or ARM running same benchmarks and whether observed regressions are observable. AMD at first was adamant that Meltdown was not reproducible on their chips at all in the beginning, but eventually changed their stance \cite{amdsec} and deployed relevant microcode updates having some degree of impact on the computation power of their chips, so further experiment would help with confirming or disproving those claims. And also, within Intel architecture itself, it'd be interesting to see how consumer chips (used for the tests) behave compared with enterprise-grade hardware (such as Xeon family), seeing how the biggest impacts reported are for machines inside data centers.
 
 Moreover, all benchmarks were performed only on Linux. When constructing future tests, inclusion of more platforms might be interesting to see, for example to compare how MacOS platform degraded in performance before and after deploying the mitigations.
+
+Finally, we are ready to address our hypotheses stated in the experimental design. For the first one, we can clearly see the regression on tests performed on systems with mitigations installed. On the other hand, higher level tests performed by Geekbench haven't produced significance, so the null hypothesis can only be partially rejected with regard to the tasks performed by running benchmarks (task scheduling, context switching and socket activity). Second hypothesis is not going to be rejected, as the noticed regression of 0.05\% cannot be classified as significant increase in runtime, thus confirming Microsoft's claims \cite{myerson2018understanding}.
 
 \section{Conclusion}
 \label{sec:conc}
