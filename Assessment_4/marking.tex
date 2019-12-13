@@ -23,16 +23,16 @@
     
     	\section{INTRODUCTION, BACKGROUND, RESEARCH QUESTION}
        \subsection{Does the Introduction present the context and "big picture"?} 
-Student introduced notion of Fast Fourier Transform and where it is used, but never actually explained how and what problems they are solving. Perhaps it'd be useful to include a sentence or two on the nature of problems that FFT are used in. Nevertheless, the entire paper has been correctly condensed and summarised in the introduction and I agree that the algorithm itself is not the subject of the paper, but rather its performance.
+Student introduced notion of Fast Fourier Transform and explained where it is used, but never actually explained how and what problems the algorithms are solving. Perhaps it'd be useful to include a sentence or two on the nature of problems that FFT are used in. Nevertheless, the entire paper has been correctly condensed and summarised in the introduction and I agree that the algorithm itself is not the subject of the paper, but rather its performance.
       
 		\subsection{Does related work contain adequate references to related work and discussion of that work?  }
 Yes, plenty of examples from industry attempting to benchmark the algorithm.
 \subsection{Are references properly formatted and complete?}
-Yes, although I feel like some extra references would be needed too, student sometimes makes claims without referencing it to any other source (e.g. ``There are other Benchmarking open source and private results[\ldots]'', citing one of them reference would be nice).
+Yes, although I feel like some extra references would be needed too, student sometimes makes claims without referencing them to any other source (e.g. ``There are other Benchmarking open source and private results[\ldots]'', citing or at least linking one of them for reference would be better).
 \bigbreak\noindent
 Also Figure 2 was never referenced. If it has been produced for the purposes of this project, it should contain more explanation, otherwise it should be cited. 
 \subsection{Is a research question presented and tied into the literature review/background?}
-I couldn't find a clearly stated research question in the third section - or in any of the earlier ones. Reading through "Research Question" section, it feels more like experimental design, rather than trying to identify the claim that we are trying to prove or disprove. Student describes \textit{how} to measure, but never actually mentions what we are trying to find out. One could deduce from the content presented that \textit{general} performance is measured, although I don't think it's something that reader should deducing themselves - rather it should be clearly stated by the author.
+I couldn't find a clearly stated research question in the third section - or in any of the earlier ones. Reading through ``Research Question'' section (sec 3), it feels more like experimental design, rather than trying to identify the claim that we are trying to prove or disprove. Student describes \textit{how} to measure, but never actually mentions what we are trying to find out. One could deduce from the content presented that \textit{general} performance is measured, although I don't think it's something that reader should be deducing themselves - rather it should be clearly stated by the author.
  \subsection{COMMENTS AND MARK} 
  \begin{itemize}
    \item The two biggest things that were missing and / or skipped in my opinion is slightly too advanced introduction - which might be hard to understand without any background or knowledge of FFT algorithms and the fact that Research Question section feels more like description of the experiment, forcing the reader to assume things about the purpose of the paper.
@@ -50,9 +50,9 @@ When describing the operating systems, student said that Pentium 4 is running Li
 \bigbreak\noindent
 It could also be useful to list the RAM and Storage capabilities of each machine, since I/O speeds (of both volatile and non-volatile memories) could affect the runtime of algorithms.
 \bigbreak\noindent
-Also the version of BenchFFT was not mentioned, which make it hard to reproduce the test should BenchFFT be updated to a different version, thus in theory changing its features.
+Also the version of BenchFFT was not mentioned, which makes it hard to reproduce the test should BenchFFT be updated to a different version, thus in theory changing its features and potential test outcomes.
 \subsection{Is the experiment described in sufficient detail to be replicated?}
-Yes, although sometimes vague ("approximately 2-3 days")
+Yes, although sometimes vague (``approximately 2-3 days'')
 \subsection{Does the experimental design enable the hypotheses to be adequately tested?}
 Yes, BenchFFT should be able to measure raw performance of both machines and see which one is performing better by comparing explained metrics (Mflops).
 \subsection{Are other, potentially influencing, factors controlled for/managed?}
@@ -75,9 +75,9 @@ Yes, lots of graphs.
 \bigbreak\noindent
 Student mentions that "tables are excluded from the report". I understand the sentiment, although maybe it would still be nice to include them in the appendix.
 \subsection{Are appropriate statistical tests performed, and p values presented?}
-Student mentions lot of p-values, although only once states the actual value, normally deciding to only state that it's smaller than 0.05 - without precise values. Perhaps to increase the credibility of the tests, it'd be nice to list the exact values.
+Student mentions lot of p-values, although only once states the actual value, normally deciding to only state that it's smaller than 0.05 - without precise numbers. Perhaps to increase the credibility of the tests, it'd be nice to list the exact values.
 \bigbreak\noindent
-It's also never explained \textit{what} the p-test is performed against, only that it has been performed. 
+It's also never explained \textit{what} the p-test is performed against, only that they have been performed. 
 \subsection{Is a qualitative analysis given of mistakes and poor performance?}
 No, student once encountered p-value of 0.8028, but never explained why this might have been the case and how could this been avoided.
 \subsection{COMMENTS AND MARK}
@@ -91,7 +91,7 @@ No, student once encountered p-value of 0.8028, but never explained why this mig
 \subsection{Does the discussion follow from the results?}
 Yes, it's a direct continuation of the previous section
 \subsection{Does the discussion present key insights from the result?}
-Yes, although it feels like the conclusion focuses more on the comparison of various algorithms, as opposed to comparing the same algorithms on different machines (as per stated hypotheses in section 4.
+Yes, although it feels like the conclusion focuses more on the comparison of various algorithms, as opposed to comparing the same algorithms on different machines (as per stated hypotheses in section 4).
 \subsection{Is sensible future work proposed?}
 Yes, student suggests looking into memory access times or considering different implementations of algorithms to further reduce the noise. 
 \subsection{Does the conclusion summarise the key findings of the report?}
@@ -105,9 +105,11 @@ Kind of, starts fine, mentioning that all algorithms perform well, but then side
 \section{OVERALL COMMENTS AND MARK}
 \begin{itemize}
   \item The report tackled a quite heavy topic of benchmarking complex algorithms. It draws appropriate conclusions, although sometimes gets lost and sidetracks to different issues, which weren't defined as in-scope for the report. I think it was mostly caused by the fact that research question wasn't ever strictly stated, thus mentioning anything became a possibility.
-  \item The paper also has some spelling and grammar mistakes, often capitalising random words in sentences which hurts readability. There is also some inconsistencies with spelling (e.g. sometimes spelling "i7", sometimes "i-7" and sometimes "I7") 
+  \item The paper also has some spelling and grammar mistakes, often capitalising random words in sentences which hurts readability. There is also some inconsistencies with spelling of brand names (e.g. sometimes spelling "i7", sometimes "i-7" and sometimes "I7") 
   \item Finally, the report draws conclusions, but never relates them to the stated hypotheses and instead discusses efficiency of various algorithms - which isn't in-scope, from what I understood.
 \end{itemize}
+I still think that it was a good report, where the student choose a quite heavy and hectic subject to research, thus limiting the possible maneuvers, so aforementioned problems naturally sneaked in. Results were appropriate and satisfactory.
+\bigbreak\noindent
 \textbf{Overall mark: B2}
 \end{normalsize}
 \end{document}
